@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .flex-container-row {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-evenly;
+            }
+
+            .flex-container-row > div {
+                flex: 1;
+                width: 100px;
+                height: 100px;
+                box-sizing: border-box;
+                border: 1px solid black;
+                font-size: 26px;
+                text-align: center;
+                line-height: 100px;
+            }
+
+            div[data-bound="2"]:not([data-id="2"]) {
+                background-color: red;
+            }
+
+            div[data-bound="3"]:not([data-id="3"]) {
+                background-color: green;
+            }
+
+            div[data-bound="5"]:not([data-id="5"]) {
+                background-color: blue;
+            }
+
+            div[data-bound="7"]:not([data-id="7"]) {
+                background-color: orange;
+            }
+            
+            div[data-bound="11"]:not([data-id="11"]) {
+                background-color: hotpink;
+            }
+        </style>
+    </head>
+    <body>
+        <section id=sieve></section>
+        <script>
+            (function() {
+                let size = 121;
+                let count = 1;
+                for(let i = 0; i < Math.sqrt(size); i++) {
+                    let sec = document.createElement('section');
+                    sec.className = 'flex-container-row';
+                    for(let j = 0; j < Math.sqrt(size); j++) {
+                        let div = document.createElement('div');
+                        div.dataset.id=count;
+                        div.innerText = count;
+                        div.dataset.bound= count++;
+                        if(i==0&&j==0)div.style.backgroundColor = '#000';
+                        sec.appendChild(div);
+                    }
+                    sieve.appendChild(sec);
+                }
+                let primes = new Array(size).fill(false);
+                for(let i = 2; i < size; i++) {
+                    primes[i] = true;
+                }
+
+                let basePrimes = new Set();
+
+                for(let i = 2; i*i<=size;i++) {
+                    if(!primes[i]) continue;
+                    
+                    // jump through the numbers to make them false
+                    for(let j = i * i; j<=size;j+=i) {
+                        primes[j] = false;
+                    }
+                }
+                    
+                for(let i = 2; i <= size; i++) {
+                    if(primes[i]) basePrimes.add(i);
+                }
+
+                function sleep(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                }
+
+                async function color() {
+                    for(let i = 2; i*i<=size;i++) {
+                        if(!primes[i]) continue;
+                        // jump through the numbers to make them false
+                        for(let j = i * i; j<=size;j+=i) {
+                            primes[j] = false;
+                            let tmp = document.querySelector(`div[data-id='${j}']`);
+                            console.log(tmp.dataset.bound)
+                            if(!basePrimes.has(tmp.dataset.bound))tmp.dataset.bound=i;
+                            console.log(tmp);
+                            await sleep(35)
+                        }
+                    }
+                }
+                color();
+                
+            })();
+        </script>
+    </body>
+</html>
